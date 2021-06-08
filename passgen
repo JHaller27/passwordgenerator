@@ -19,7 +19,7 @@ parser.add_argument('-e', '--exclude', type=str, default=None, help='Blacklist c
 parser.add_argument('-r', '--regex', type=str, help='Result MUST match regex')
 parser.add_argument('-R', '--antiregex', type=str, help='Result must NOT match regex')
 
-args = parser.parse_args(["40", "-r", "(.)\\1"])
+args = parser.parse_args()
 
 
 def whitelist(charstr: str, whitelist: Optional[str]) -> str:
