@@ -33,40 +33,44 @@ def whitelist(charstr: str, whitelist: Optional[str]) -> str:
     return charstr
 
 
-letters = whitelist(''.join([chr(ord('A') + i) + chr(ord('a') + i) for i in range(26)]), args.include)
-digits = whitelist(''.join([str(i) for i in range(10)]), args.include)
-symbols = whitelist('!@#$\%^&*()_+`-=\\|{}[];\':",./<>?', args.include)
-
-alphabet = ''
-
-if not args.letters:
-    alphabet += letters
-if not args.digits:
-    alphabet += digits
-if not args.symbols:
-    alphabet += symbols
-
-alphaset = set(alphabet)
-if args.exclude is not None:
-    alphaset.difference_update(args.exclude)
-
-alphabet = ''.join(alphaset)
-
-
 def mkpasswd(charset, size):
     return ''.join([choice(charset) for _ in range(size)])
 
 
-passwd = mkpasswd(alphabet, args.length)
+def main():
+    letters = whitelist(''.join([chr(ord('A') + i) + chr(ord('a') + i) for i in range(26)]), args.include)
+    digits = whitelist(''.join([str(i) for i in range(10)]), args.include)
+    symbols = whitelist('!@#$\%^&*()_+`-=\\|{}[];\':",./<>?', args.include)
 
-if args.regex is not None:
-    regex = re.compile(args.regex)
-    while not regex.search(passwd):
-        passwd = mkpasswd(alphabet, args.length)
+    alphabet = ''
 
-elif args.antiregex is not None:
-    regex = re.compile(args.antiregex)
-    while regex.search(passwd):
-        passwd = mkpasswd(alphabet, args.length)
+    if not args.letters:
+        alphabet += letters
+    if not args.digits:
+        alphabet += digits
+    if not args.symbols:
+        alphabet += symbols
 
-print(passwd)
+    alphaset = set(alphabet)
+    if args.exclude is not None:
+        alphaset.difference_update(args.exclude)
+
+    alphabet = ''.join(alphaset)
+
+    passwd = mkpasswd(alphabet, args.length)
+
+    if args.regex is not None:
+        regex = re.compile(args.regex)
+        while not regex.search(passwd):
+            passwd = mkpasswd(alphabet, args.length)
+
+    elif args.antiregex is not None:
+        regex = re.compile(args.antiregex)
+        while regex.search(passwd):
+            passwd = mkpasswd(alphabet, args.length)
+
+    print(passwd)
+
+
+if __name__ == "__main__":
+    main()
