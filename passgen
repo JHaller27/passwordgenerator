@@ -2,6 +2,7 @@
 
 from random import choice
 import argparse
+import re
 from typing import Optional
 
 
@@ -15,7 +16,10 @@ parser.add_argument('-s', '--symbols', action='store_true', help='Exclude symbol
 parser.add_argument('-i', '--include', type=str, default=None, help='Whitelist characters from their char-set')
 parser.add_argument('-e', '--exclude', type=str, default=None, help='Blacklist characters')
 
-args = parser.parse_args()
+parser.add_argument('-r', '--regex', type=str, help='Result MUST match regex')
+parser.add_argument('-R', '--antiregex', type=str, help='Result must NOT match regex')
+
+args = parser.parse_args(["40", "-r", "(.)\\1"])
 
 
 def whitelist(charstr: str, whitelist: Optional[str]) -> str:
@@ -50,5 +54,21 @@ if args.exclude is not None:
 
 alphabet = ''.join(alphaset)
 
-passwd = ''.join([choice(alphabet) for _ in range(args.length)])
+
+def mkpasswd(charset, size):
+    return ''.join([choice(charset) for _ in range(size)])
+
+
+passwd = mkpasswd(alphabet, args.length)
+
+if args.regex is not None:
+    regex = re.compile(args.regex)
+    while not regex.search(passwd):
+        passwd = mkpasswd(alphabet, args.length)
+
+elif args.antiregex is not None:
+    regex = re.compile(args.antiregex)
+    while regex.search(passwd):
+        passwd = mkpasswd(alphabet, args.length)
+
 print(passwd)
