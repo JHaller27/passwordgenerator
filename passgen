@@ -3,6 +3,7 @@
 
 from random import choice
 import argparse
+from typing import Optional
 
 
 parser = argparse.ArgumentParser()
@@ -12,15 +13,28 @@ parser.add_argument('-l', '--letters', action='store_true', help='Exclude letter
 parser.add_argument('-d', '--digits', action='store_true', help='Exclude numbers (0-9)')
 parser.add_argument('-s', '--symbols', action='store_true', help='Exclude symbols (!@#$)')
 
-parser.add_argument('-i', '--include', type=str, default=None, help='Whitelist characters')
+parser.add_argument('-i', '--include', type=str, default=None, help='Whitelist characters from their char-set')
 parser.add_argument('-e', '--exclude', type=str, default=None, help='Blacklist characters')
 
-args = parser.parse_args(["40", "-i", "().&@?'#-,\/\"+"])
+args = parser.parse_args()
 
 
-letters = ''.join([chr(ord('A') + i) + chr(ord('a') + i) for i in range(26)])
-digits = ''.join([str(i) for i in range(10)])
-symbols = '!@#$\%^&*UI()_+`-=\\|{}[];\':",./<>?'
+def whitelist(charstr: str, whitelist: Optional[str]) -> str:
+    if whitelist is not None:
+        charset = set(charstr)
+        whiteset = set(whitelist)
+
+        charset.intersection_update(whiteset)
+
+        if len(charset) != 0:
+            charstr = ''.join(charset)
+
+    return charstr
+
+
+letters = whitelist(''.join([chr(ord('A') + i) + chr(ord('a') + i) for i in range(26)]), args.include)
+digits = whitelist(''.join([str(i) for i in range(10)]), args.include)
+symbols = whitelist('!@#$\%^&*()_+`-=\\|{}[];\':",./<>?', args.include)
 
 alphabet = ''
 
@@ -32,8 +46,6 @@ if not args.symbols:
     alphabet += symbols
 
 alphaset = set(alphabet)
-if args.include is not None:
-    alphaset.intersection_update(args.include)
 if args.exclude is not None:
     alphaset.difference_update(args.exclude)
 
