@@ -4,6 +4,9 @@ import re
 from typing import Optional
 
 
+VERSION = '1.0.0'
+
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument('length', type=int, help='Number of characters')
@@ -16,6 +19,8 @@ parser.add_argument('-e', '--exclude', type=str, default=None, help='Blacklist c
 
 parser.add_argument('-r', '--regex', type=str, help='Result MUST match regex')
 parser.add_argument('-R', '--antiregex', type=str, help='Result must NOT match regex')
+
+parser.add_argument('--version', action='version', version=f'%(prog)s {VERSION}')
 
 args = parser.parse_args()
 
