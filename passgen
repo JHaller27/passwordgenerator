@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+
+from random import choice
+import argparse
+
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument('length', type=int, help='Number of characters')
+parser.add_argument('-l', '--letters', action='store_true', help='Exclude letters (aA)')
+parser.add_argument('-d', '--digits', action='store_true', help='Exclude numbers (0-9)')
+parser.add_argument('-s', '--symbols', action='store_true', help='Exclude symbols (!@#$)')
+
+parser.add_argument('-i', '--include', type=str, default=None, help='Whitelist characters')
+parser.add_argument('-e', '--exclude', type=str, default=None, help='Blacklist characters')
+
+args = parser.parse_args(["40", "-i", "().&@?'#-,\/\"+"])
+
+
+letters = ''.join([chr(ord('A') + i) + chr(ord('a') + i) for i in range(26)])
+digits = ''.join([str(i) for i in range(10)])
+symbols = '!@#$\%^&*UI()_+`-=\\|{}[];\':",./<>?'
+
+alphabet = ''
+
+if not args.letters:
+    alphabet += letters
+if not args.digits:
+    alphabet += digits
+if not args.symbols:
+    alphabet += symbols
+
+alphaset = set(alphabet)
+if args.include is not None:
+    alphaset.intersection_update(args.include)
+if args.exclude is not None:
+    alphaset.difference_update(args.exclude)
+
+alphabet = ''.join(alphaset)
+
+passwd = ''.join([choice(alphabet) for _ in range(args.length)])
+print(passwd)
